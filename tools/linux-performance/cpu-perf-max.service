@@ -1,0 +1,11 @@
+[Unit]
+Description=Perfil de CPU para jogos (governor performance e C-states)
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/cpu-perf-max
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

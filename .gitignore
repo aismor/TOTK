@@ -1,0 +1,14 @@
+# Fontes locais usadas para montar os arquivos da Release.
+/aismor - */
+/Triforce Heroes - */
+/LEIA-ME.txt
+
+# Saida gerada; publicar como assets do GitHub Release, nao como commits.
+/release-assets/
+
+# Materiais usados apenas na preparacao local.
+/preview/
+/scripts/
+
+# Shaders ficam totalmente fora do repositorio.
+/shaders/
