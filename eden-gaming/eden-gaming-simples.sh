@@ -10,13 +10,47 @@ die() {
     exit 1
 }
 
+ensure_directory() {
+    local directory="$1"
+
+    if [[ -e $directory && ! -d $directory ]]; then
+        die "$directory existe, mas nao e uma pasta"
+    fi
+
+    if [[ ! -d $directory ]]; then
+        mkdir -p "$directory" || die "nao foi possivel criar a pasta $directory"
+    fi
+}
+
 install_launcher() {
     local target="$HOME/.local/bin/eden-gaming"
     local desktop="$HOME/.local/share/applications/eden-gaming.desktop"
+    local icon_dir="$HOME/.local/share/icons/hicolor/scalable/apps"
+    local icon="$icon_dir/eden-gaming.svg"
+    local icon_tmp="${icon}.tmp.$$"
+    local icon_url="https://git.eden-emu.dev/assets/img/logo.svg"
 
-    mkdir -p "${target%/*}" "${desktop%/*}"
+    ensure_directory "${target%/*}"
+    ensure_directory "${desktop%/*}"
+    ensure_directory "$icon_dir"
+
     install -m 755 "$(readlink -f "$0")" "$target" \
         || die "nao foi possivel instalar $target"
+
+    if command -v curl >/dev/null 2>&1; then
+        curl --fail --location --silent --show-error \
+            --output "$icon_tmp" "$icon_url" \
+            || { rm -f "$icon_tmp"; die "nao foi possivel baixar o icone do Eden"; }
+    elif command -v wget >/dev/null 2>&1; then
+        wget --quiet --output-document="$icon_tmp" "$icon_url" \
+            || { rm -f "$icon_tmp"; die "nao foi possivel baixar o icone do Eden"; }
+    else
+        die "curl ou wget e necessario para baixar o icone do Eden"
+    fi
+
+    install -m 644 "$icon_tmp" "$icon" \
+        || { rm -f "$icon_tmp"; die "nao foi possivel instalar $icon"; }
+    rm -f "$icon_tmp"
 
     cat >"$desktop" <<EOF
 [Desktop Entry]
@@ -26,7 +60,7 @@ Name=Eden Gaming
 GenericName=Switch Emulator
 Comment=Abre o Eden com painel de FPS opcional e GameMode
 Exec=$target
-Icon=eden
+Icon=eden-gaming
 Terminal=false
 Categories=Game;Emulator;
 Keywords=Eden;Nintendo;Switch;FPS;MangoHud;
@@ -36,6 +70,9 @@ EOF
     chmod 644 "$desktop"
     if command -v update-desktop-database >/dev/null 2>&1; then
         update-desktop-database "$HOME/.local/share/applications" >/dev/null 2>&1 || true
+    fi
+    if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+        gtk-update-icon-cache --force "$HOME/.local/share/icons/hicolor" >/dev/null 2>&1 || true
     fi
 
     printf 'Instalado com sucesso. Procure por "Eden Gaming" no menu de aplicativos.\n'
