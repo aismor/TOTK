@@ -57,9 +57,11 @@ O repositório também inclui o inicializador simplificado:
 eden-gaming/eden-gaming-simples.sh
 ```
 
-Ele localiza o Eden, abre o emulador com MangoHud e usa GameMode quando
-disponível. O painel funciona com GPUs NVIDIA, AMD e Intel e pode mostrar FPS,
-frametime, uso, temperatura e clocks conforme o suporte do driver.
+Ele localiza o Eden, pergunta se você deseja mostrar FPS e usa GameMode quando
+disponível. Ao escolher **Sim**, abre o emulador com MangoHud; ao escolher
+**Não**, abre normalmente, sem o painel. O painel funciona com GPUs NVIDIA,
+AMD e Intel e pode mostrar FPS, frametime, uso, temperatura e clocks conforme
+o suporte do driver.
 
 Instale o MangoHud pela sua distribuição e depois execute:
 

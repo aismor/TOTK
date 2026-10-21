@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Inicializador simples do Eden com MangoHud e GameMode opcional.
+# Inicializador simples do Eden com MangoHud selecionavel e GameMode opcional.
 # Funciona com GPUs NVIDIA, AMD e Intel.
 
 set -u
@@ -24,7 +24,7 @@ Version=1.0
 Type=Application
 Name=Eden Gaming
 GenericName=Switch Emulator
-Comment=Abre o Eden com painel de FPS e GameMode opcional
+Comment=Abre o Eden com painel de FPS opcional e GameMode
 Exec=$target
 Icon=eden
 Terminal=false
@@ -86,16 +86,48 @@ find_eden() {
 
 eden=$(find_eden) || die "Eden nao encontrado. Defina EDEN_EXECUTABLE com o caminho correto."
 
-# Toda a configuracao do overlay fica neste arquivo unico.
-export MANGOHUD=1
-export MANGOHUD_CONFIG='position=top-left,font_size=22,background_alpha=0.35,round_corners=6,fps,frametime,frame_timing,cpu_stats,cpu_temp,cpu_mhz,cpu_load_change,gpu_stats,gpu_temp,gpu_core_clock,gpu_power,gpu_load_change,vram,ram,toggle_hud=Shift_R+F12'
+ask_show_fps() {
+    if [[ -n ${DISPLAY:-}${WAYLAND_DISPLAY:-} ]] && command -v zenity >/dev/null 2>&1; then
+        zenity --question \
+            --title="Eden Gaming" \
+            --text="Mostrar FPS?" \
+            --ok-label="Sim" \
+            --cancel-label="Não"
+        return
+    fi
+
+    if [[ -n ${DISPLAY:-}${WAYLAND_DISPLAY:-} ]] && command -v kdialog >/dev/null 2>&1; then
+        kdialog --title "Eden Gaming" --yesno "Mostrar FPS?"
+        return
+    fi
+
+    if [[ -t 0 ]]; then
+        local answer
+        while true; do
+            read -r -p "Mostrar FPS? [s/n] " answer
+            case ${answer,,} in
+                s|sim) return 0 ;;
+                n|nao|não) return 1 ;;
+                *) printf 'Responda s para Sim ou n para Não.\n' ;;
+            esac
+        done
+    fi
+
+    printf 'Aviso: interface de pergunta indisponivel; abrindo sem mostrar FPS.\n' >&2
+    return 1
+}
 
 command=("$eden" "$@")
 
-if command -v mangohud >/dev/null 2>&1; then
-    command=(mangohud "${command[@]}")
-else
-    printf 'Aviso: MangoHud nao encontrado; Eden sera aberto sem o painel de FPS.\n' >&2
+if ask_show_fps; then
+    if command -v mangohud >/dev/null 2>&1; then
+        # Toda a configuracao do overlay fica neste arquivo unico.
+        export MANGOHUD=1
+        export MANGOHUD_CONFIG='position=top-left,font_size=22,background_alpha=0.35,round_corners=6,fps,frametime,frame_timing,cpu_stats,cpu_temp,cpu_mhz,cpu_load_change,gpu_stats,gpu_temp,gpu_core_clock,gpu_power,gpu_load_change,vram,ram,toggle_hud=Shift_R+F12'
+        command=(mangohud "${command[@]}")
+    else
+        printf 'Aviso: MangoHud nao encontrado; Eden sera aberto sem o painel de FPS.\n' >&2
+    fi
 fi
 
 if command -v gamemoderun >/dev/null 2>&1; then
