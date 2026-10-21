@@ -31,11 +31,12 @@ Coleção final de mods testados no **The Legend of Zelda: Tears of the Kingdom
 
 ## Coleção completa
 
-- [Coleção com UltraCam 60 FPS](https://github.com/aismor/TOTK/releases/download/v1.0.0/aismor-colecao-completa-60fps-totk-1.2.1.zip)
-- [Coleção com UltraCam 30 FPS](https://github.com/aismor/TOTK/releases/download/v1.0.0/aismor-colecao-completa-30fps-totk-1.2.1.zip)
+- [Coleção completa sem mod de FPS](https://github.com/aismor/TOTK/releases/download/v1.0.0/aismor-colecao-completa-totk-1.2.1.zip)
 
-Os pacotes completos possuem uma pasta com o Title ID para cópia manual. Eles
-incluem a tradução/dublagem da Equipe Triforce Heroes, mas não incluem shaders.
+O pacote completo possui uma pasta com o Title ID para cópia manual. Ele inclui
+a tradução/dublagem da Equipe Triforce Heroes, mas não inclui UltraCam, outro
+mod de FPS ou shaders. Instale separadamente apenas um dos perfis UltraCam de
+30 ou 60 FPS disponíveis nos downloads individuais.
 
 ## Instalação individual
 
